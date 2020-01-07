@@ -15,7 +15,7 @@ import pandas as pd
 
 #dly_file = 'data/USW00094728.dly'
 
-def dly_ingest(dly_file):
+def dly_process(dly_file):
 
     # Fixed width format
     #
