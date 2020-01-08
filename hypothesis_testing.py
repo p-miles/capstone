@@ -8,9 +8,6 @@ from datetime import datetime,timedelta
 from data_pipeline import dly_process
 
 
-dly_file = 'data/USW00094728.dly'
-
-df = dly_process(dly_file)
 
 def calculate_p_val(obs_series,obs_val):
     rv = stats.norm(obs_series.mean(),obs_series.std(ddof=1)) # use parameterized normal distribution
@@ -46,23 +43,36 @@ def series_select(df_in,dt,obs_el):
         return
 
 
-dt1 = '20200406'
-Tmax_week = series_select(df,dt1,'TMAX') * 0.1
+def gen_plot(fig,loc,date):
+    #fig,ax = plt.subplots(figsize=(10,8))
+    ax = fig.subplots()
+    #n = 10
+    #ax.plot(range(n), [random() for i in range(n)])
+    
+    dly_file = 'data/USW00094728.dly'
 
-# use ref series only up to 1980
-Tmax_week_REF = Tmax_week[:'1980']
+    #df = dly_process(dly_file)
+
+    dt1 = '20200406'
+    #Tmax_week = series_select(df,dt1,'TMAX') * 0.1
+
+    # use ref series only up to 1980
+    #Tmax_week_REF = Tmax_week[:'1980']
 
 
-p_val = calculate_p_val(Tmax_week_REF,15)
-print(p_val)
+    #p_val = calculate_p_val(Tmax_week_REF,15)
+    #print(p_val)
+
+    #Tmax_week_REF.hist(ax=ax,density=True,bins=25)
+    #Tmax_week['1981':].hist(ax=ax,alpha=0.5,density=True,bins=25)
+
+    b = np.arange(600)*0.1-20 # all temps -20 to 40
+    #g = stats.norm(Tmax_week_REF.mean(),Tmax_week_REF.std())
+    g = stats.norm(0,5)
+    ax.plot(b,g.pdf(b))
+    ax.set_title(loc+' '+date)
+    #plt.show()
 
 
-fig,ax = plt.subplots(figsize=(10,8))
-Tmax_week_REF.hist(ax=ax,density=True,bins=25)
-Tmax_week['1981':].hist(ax=ax,alpha=0.5,density=True,bins=25)
 
-b = np.arange(600)*0.1-20 # all temps -20 to 40
-g = stats.norm(Tmax_week_REF.mean(),Tmax_week_REF.std())
-ax.plot(b,g.pdf(b))
 
-plt.show()
