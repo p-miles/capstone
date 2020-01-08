@@ -1,4 +1,5 @@
 from flask import Flask, request
+import matplotlib
 from matplotlib.figure import Figure
 from io import BytesIO
 
@@ -31,9 +32,12 @@ def get_graph():
     loc = str(request.form['location']) #gets the value entered in the input type="text", name="user_input"
     date = str(request.form['date'])
     
-    fig = Figure()
+    matplotlib.rcParams.update({'font.size': 18})
+    fig = Figure(figsize=(12,8))
 
-    hypothesis_testing.gen_plot(fig,loc,date)
+    tt = hypothesis_testing.ttestProduct(loc,date)
+    tt.gen_plot(fig)
+    
     
     image = BytesIO()
     fig.savefig(image)  #the plot is saved
