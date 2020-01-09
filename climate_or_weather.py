@@ -100,7 +100,7 @@ class weatherRecord():
         
         #p_val = self.calculate_p_val(Tmax_week_REF,Tmax_on_date)
         
-        bins = np.arange(61)*1-20
+        bins = np.arange(31)*2-20
         ax.hist(self.smear_raw_temps(Tmax_week_REF.values),density=True,bins=bins,alpha=.5,color='b')
         ax.hist(self.smear_raw_temps(Tmax_week_recent.values),density=True,bins=bins,histtype='step',lw=2,color='r')
         
