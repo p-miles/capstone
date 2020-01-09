@@ -1,19 +1,21 @@
 '''
 Given a .dly file from NOAA GHCN database
 Read the fixed-width formatted data into a pandas dataframe
+
+Each line is a month of observations of a particular type 
+(like temp or precip) which is not a user-friendly format.
+
 Output will be a dataframe with datetime indices and column
 names with observation code (i.e. TMAX, PRCP).
 Most observations will be filled with NaN values because
-historical data from long ago was typically only temperatures
-and precipitation.
+historical data from long ago was typically only five core 
+elements.
 
 See data/readme.txt for full description.
 '''
 
 import numpy as np
 import pandas as pd
-
-#dly_file = 'data/USW00094728.dly'
 
 def dly_process(dly_file):
 
@@ -35,7 +37,7 @@ def dly_process(dly_file):
     df.replace(-9999, np.nan,inplace=True)
 
 
-    # establish multiindex with existing rows
+    # establish multiindex with existing rows before stack
     df.set_index(['ELEMENT','YEAR','MONTH'],inplace=True)
     # stack to rotate day-of-month columns into rows
     s = df.stack() # result is a series not a dataframe

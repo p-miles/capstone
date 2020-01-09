@@ -1,18 +1,19 @@
-from flask import Flask, request
+import flask
 import matplotlib
-from matplotlib.figure import Figure
 from io import BytesIO
 
-import hypothesis_testing
+import climate_or_weather as cor
 
-app = Flask(__name__)
+matplotlib.rcParams.update({'font.size': 18})
+
+app = flask.Flask(__name__)
 
 # Form page to submit text
 @app.route('/')
 def submission_page():
     # in this form, method = 'POST' means that data entered into
-    # the 'user_input' variable will be sent to the /word_counter routing
-    # block when the 'Enter text' submit button is pressed
+    # the 'location' and 'date' variables will be sent to the /plot.png routing
+    # block when the submit button is pressed
     return '''
         <form action="/plot.png" method='POST' >
             <center>
@@ -29,15 +30,16 @@ def submission_page():
 
 @app.route('/plot.png', methods=['GET', 'POST'])
 def get_graph():
-    loc = str(request.form['location']) #gets the value entered in the input type="text", name="user_input"
-    date = str(request.form['date'])
+    # retrieve input data from submission page
+    loc = str(flask.request.form['location'])
+    date = str(flask.request.form['date'])
     
-    matplotlib.rcParams.update({'font.size': 18})
-    fig = Figure(figsize=(12,8))
-
-    tt = hypothesis_testing.ttestProduct(loc,date)
-    tt.gen_plot(fig)
+    # must create figure using Figure(), not subplots() or app will crash
+    fig = matplotlib.figure.Figure(figsize=(12,8)) 
     
+    # create object that encapsulates all the data needed for analysis and plotting methods
+    weather_record = cor.weatherRecord(loc,date)
+    weather_record.gen_plot(fig)
     
     image = BytesIO()
     fig.savefig(image)  #the plot is saved

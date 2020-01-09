@@ -3,31 +3,39 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import scipy.stats as stats
-from datetime import datetime,timedelta
-from geopy.distance import great_circle
 import geopandas as gpd
+from geopy.distance import great_circle
 
 from data_pipeline import dly_process
 
-
-
-class ttestProduct():
+class weatherRecord():
 
     def __init__(self, loc, date):
+        self.loc = loc # loc is a string that can be parsed by geocode
+        self.date = pd.to_datetime(date,yearfirst=True) # expect compatible dt string like YYYY-MM-DD
+        
+        # initialize latlon to Denver, CO prior to geocode try/except block
+        latlon = (39.7392365108763, -104.990217201602)
+        try:
+            shapely_geo = gpd.tools.geocode(self.loc).iloc[0] # uses service to find location
+            latlon = (shapely_geo.geometry.y,shapely_geo.geometry.x)
+        except:
+            self.loc = 'Denver, CO'
+            print('Error geocode - default to Denver')
+        
 
-        self.loc = loc
-        self.date = pd.to_datetime(date,yearfirst=True) # expect compatible dt string like YYYYMMDD
-        
-        shapely_geo = gpd.tools.geocode(self.loc).iloc[0]
-        latlon = (shapely_geo.geometry.y,shapely_geo.geometry.x)
-        
         self.station = self.select_nearest_station(latlon)
         station_id = self.station.ID
-        
-        dly_file_force = 'data/USW00094728.dly'
-        self.dly_file = 'data/ghcnd_hcn/'+station_id+'.dly'
+        print(station_id)
+        #dly_file = 'data/USW00094728.dly' # for testing purposes
+        dly_file = 'data/ghcnd_hcn/'+station_id+'.dly'
 
-        self.df = dly_process(self.dly_file)
+        self.df = dly_process(dly_file)
+
+        if not self.date in self.df.index:
+            print('Error - Date out of range')
+            self.date = self.df.index[-1] # set to last available day
+
         self.Tmax_week = self.series_select(self.df,self.date,'TMAX') * 0.1
 
     def select_nearest_station(self,latlon):
@@ -41,6 +49,9 @@ class ttestProduct():
         rv = stats.norm(obs_series.mean(),obs_series.std(ddof=1)) # use parameterized normal distribution
         return rv.sf(obs_val)
 
+    def smear_raw_temps(self,t):
+        r = (np.random.rand(t.size)-0.5)*2
+        return t+r
 
     def series_select(self,df,dt,obs_el):
         
@@ -81,24 +92,39 @@ class ttestProduct():
         value_on_date = self.Tmax_week[self.date]
         
         p_val = self.calculate_p_val(Tmax_week_REF,value_on_date)
-
-        ax.hist(Tmax_week_REF.values,density=True,bins=25)
-        ax.hist(Tmax_week_recent.values,density=True,bins=25,histtype='step')
         
-        b = np.arange(600)*0.1-20 # all temps -20 to 40
-        g = stats.norm(Tmax_week_REF.mean(),Tmax_week_REF.std())
-        # estimate parameters from sample
-        #ae, loce, scalee = stats.skewnorm.fit(Tmax_week_REF.values)
-        #print(ae,loce,scalee)
-        ax.plot(b,g.pdf(b),lw=0.5)
-        ax.set_title('High Temperatures in {'+self.station.NAME+', '+self.station.STATE+'} on week of '+self.date.strftime('%m-%d'))
-        ax.axvline(x=value_on_date,c='r',lw=2)
-        ax.text(40,.1,f'P value: {p_val:5.3}',ha='right')
+        b = np.arange(61)*1-20
+        ax.hist(self.smear_raw_temps(Tmax_week_REF.values),density=True,bins=b,alpha=.5,color='b')
+        ax.hist(self.smear_raw_temps(Tmax_week_recent.values),density=True,bins=b,histtype='step',lw=2,color='r')
+        
+        x = np.arange(600)*0.1-20 # all temps -20 to 40
 
+        y = Tmax_week_REF.values
+        y = y[~np.isnan(y)]  
+        ae, loce, scalee = stats.skewnorm.fit(y) 
+        print(ae)
+        sn = stats.skewnorm(ae, loce, scalee)
+        n = stats.norm(Tmax_week_REF.mean(),Tmax_week_REF.std())
+        p_val = sn.sf(value_on_date)
+        ax.plot(x,sn.pdf(x),lw=1,c='b')
+        ax.plot(x,n.pdf(x),lw=0.5,c='g')
+        #print(sg.sf(30),g.sf(30))
+        
+        zero,ymax = ax.get_ylim()
+
+        ax.set_title('High Temperatures in '+self.station.NAME+', '+self.station.STATE+' on week of '+self.date.strftime('%b-%d'))
+        ax.axvline(x=value_on_date,c='k',lw=2)
+        
+
+        annot_x = -20 if value_on_date > 20 else 40
+        annot_ha = 'left' if value_on_date > 20 else 'right'
         label_ha = 'left' if p_val < 0.5 else 'right' 
 
-        ax.text(value_on_date,.1,self.date.strftime(' %Y '),ha=label_ha)
+        ax.text(annot_x,.01,f'P_value: {p_val:5.3}',ha=annot_ha)
+        ax.text(annot_x,.02,self.date.strftime('%Y')+f': {value_on_date}°',ha=annot_ha)
         
-        ax.set_ylim(0,.12)
+        
+        
+        #ax.set_ylim(0,.15)
         ax.set_xlabel('°C')
     
