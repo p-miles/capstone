@@ -26,7 +26,7 @@ class weatherRecord():
 
         self.station = self.select_nearest_station(latlon)
         station_id = self.station.ID
-        print(station_id)
+        
         #dly_file = 'data/USW00094728.dly' # for testing purposes
         dly_file = 'data/ghcnd_hcn/'+station_id+'.dly'
 
@@ -50,7 +50,7 @@ class weatherRecord():
         return rv.sf(obs_val)
 
     def smear_raw_temps(self,t):
-        r = (np.random.rand(t.size)-0.5)*2
+        r = (np.random.rand(t.size)-0.5)*0
         return t+r
 
     def series_select(self,df,dt,obs_el):
@@ -80,6 +80,13 @@ class weatherRecord():
             s = s0.append(s1).sort_index()
             return
 
+    def fit_skewnorm(self,data):
+    
+        data = data[~np.isnan(data)]  # fit function cannot handle NaN values
+        a_fit, loc_fit, scale_fit = stats.skewnorm.fit(data) 
+        sn = stats.skewnorm(a_fit, loc_fit, scale_fit)
+        return sn
+
 
     def gen_plot(self,fig):
         
@@ -89,42 +96,37 @@ class weatherRecord():
         Tmax_week_REF = self.Tmax_week[:'1980']
         Tmax_week_recent = self.Tmax_week['1981':]
 
-        value_on_date = self.Tmax_week[self.date]
+        Tmax_on_date = self.Tmax_week[self.date]
         
-        p_val = self.calculate_p_val(Tmax_week_REF,value_on_date)
+        #p_val = self.calculate_p_val(Tmax_week_REF,Tmax_on_date)
         
-        b = np.arange(61)*1-20
-        ax.hist(self.smear_raw_temps(Tmax_week_REF.values),density=True,bins=b,alpha=.5,color='b')
-        ax.hist(self.smear_raw_temps(Tmax_week_recent.values),density=True,bins=b,histtype='step',lw=2,color='r')
+        bins = np.arange(61)*1-20
+        ax.hist(self.smear_raw_temps(Tmax_week_REF.values),density=True,bins=bins,alpha=.5,color='b')
+        ax.hist(self.smear_raw_temps(Tmax_week_recent.values),density=True,bins=bins,histtype='step',lw=2,color='r')
         
         x = np.arange(600)*0.1-20 # all temps -20 to 40
 
-        y = Tmax_week_REF.values
-        y = y[~np.isnan(y)]  
-        ae, loce, scalee = stats.skewnorm.fit(y) 
-        print(ae)
-        sn = stats.skewnorm(ae, loce, scalee)
+        # fit a skew normal distribution to the reference data
+        sn = self.fit_skewnorm(Tmax_week_REF.values)
+        p_val = sn.sf(Tmax_on_date)
+
         n = stats.norm(Tmax_week_REF.mean(),Tmax_week_REF.std())
-        p_val = sn.sf(value_on_date)
-        ax.plot(x,sn.pdf(x),lw=1,c='b')
-        ax.plot(x,n.pdf(x),lw=0.5,c='g')
-        #print(sg.sf(30),g.sf(30))
         
-        zero,ymax = ax.get_ylim()
+        ax.plot(x,sn.pdf(x),lw=2,c='b')
+        ax.plot(x,n.pdf(x),lw=2,c='g')
+        
+        ax.axvline(x=Tmax_on_date,c='k',lw=2)
+
+        #zero,ymax = ax.get_ylim()
 
         ax.set_title('High Temperatures in '+self.station.NAME+', '+self.station.STATE+' on week of '+self.date.strftime('%b-%d'))
-        ax.axvline(x=value_on_date,c='k',lw=2)
         
-
-        annot_x = -20 if value_on_date > 20 else 40
-        annot_ha = 'left' if value_on_date > 20 else 'right'
-        label_ha = 'left' if p_val < 0.5 else 'right' 
+        
+        annot_x = -20 if Tmax_on_date > 20 else 40
+        annot_ha = 'left' if Tmax_on_date > 20 else 'right'
 
         ax.text(annot_x,.01,f'P_value: {p_val:5.3}',ha=annot_ha)
-        ax.text(annot_x,.02,self.date.strftime('%Y')+f': {value_on_date}°',ha=annot_ha)
+        ax.text(annot_x,.02,self.date.strftime('%Y')+f': {Tmax_on_date}°',ha=annot_ha)
         
-        
-        
-        #ax.set_ylim(0,.15)
         ax.set_xlabel('°C')
     
