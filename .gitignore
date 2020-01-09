@@ -1,4 +1,5 @@
 .DS_Store
 .vscode
 docs
-data
+data/ghcnd_hcn
+data/ghcnd_hcn.tar.gz
