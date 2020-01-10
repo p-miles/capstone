@@ -6,22 +6,21 @@
 
 # Web-App
 
-<p align="center">
-    <br>
-    <a href="http://3.134.110.25:8080/"> Climate or Weather? Web-App </a>
-    <br>
-</p>
-
 *Capstone I Project for Galvanize Data Science Immersive, Week 4*
 
 *by Paul Miles*
+
+<p style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em;" align="center">
+  <a href="http://3.134.110.25:8080/"> Climate or Weather? Web-App </a>
+</p>
 
 
 ## Table of Contents
 - [Overview](#overview)
   - [How to Run](#how-to-run)
-  - [Background](#background)
+  - [Project Question](#project-question)
   - [The Data](#the-data)
+  - [Methodology](#methodology)
 - [Exploratory Data Analysis](#exploratory-data-analysis)
 - [Results](#results)
 - [Analysis](#analysis)
@@ -55,7 +54,7 @@ Access AWS Instance command
 ssh -i "~/.ssh/instancekey.pem" ec2-user@ec2-3-134-110-25.us-east-2.compute.amazonaws.com
 
 
-## Background
+## Project Question
 
 Weather is highly variable and people are prone to recency bias.  
 Do you trust your sense when you feel like it's hotter than it used to be?
@@ -64,18 +63,15 @@ Do you trust your sense when you feel like it's hotter than it used to be?
   <img src="img/Weather 5 year KDEN.png" width = 800>
 </p>
 
-Use the web-app to see the historical temperature distributions and rigorously test 
-if the current weather you are experiencing "normal" or a consequence of climate change?
+Use the web-app to see the historical temperature distributions at a given location and date.
+and mathematically test if those conditions are "normal" or a consequence of climate change?
 
 ## The Data
 
 Data are sourced from the NOAA - Historical Climatology Network
 (https://www.climate.gov/maps-data/dataset/daily-temperature-and-precipitation-reports-data-tables)
 
-
-## Question and Hypothesis
-
-Are the weather conditions at a given day and location a result of climate change or normal variability?
+Start with the most extensive and valid date to support project outcomes.
 
 ## Methodology
 
@@ -84,6 +80,12 @@ Alternative Hypothesis: or seemingly unusually high temperatures are a sign of w
 Significance level: alpha = 2%
 Statistical Test: against a fitted skew-normal distribution from pre-1980 observations
 
+To capture trends a reference period of pre-1980 is used to segment the data.
+For improved statistical significance include all observed high temperatures for week +/- 3 days.
+A t-test that assumes a normal distribution is inappropriate, see analysis below for justification.
+
+Results do not prove climate change and don't attempt to.  At most the p-value could
+suggest that the observation is not likely a result of normal weather variability (the null hypothesis).
 
 [Back to Top](#Table-of-Contents)
 
@@ -97,10 +99,13 @@ Use the 1,225 weather stations that are part of the NOAA - US Historical Climate
   <img src="img/us_hcn_map.png" width = 800>
 </p>
 
+Select nearest station to point of interest.
 
 ### Date Range
 
-Typically mid-1800's to present
+Typically mid-1800's to present, NOAA has filled in core observiations that pre-date station.
+Occasionally stations close and the record stops, also dropped observations occur.
+Basic error handling included.
 
 ### Observation Categories
 
@@ -116,6 +121,7 @@ Typically mid-1800's to present
        average cloudiness, wind direction and speed, percent possible sun
        weather type, weather in vicinity (fog, thunder, rain, snow)
 
+"Future Work" would include other elements and cumulants (i.e. heating degree days).
 
 [Back to Top](#Table-of-Contents)
 
@@ -124,9 +130,9 @@ Typically mid-1800's to present
 An example to illustrate the web-app output.
 For New York City on an unseasonably warm day 2016-04-01
 
-Solid blue: histogram from reference data pre-1980.  See Methodology(#methodology)
-Blue line - ref distribution fitted with skew-normal
-Red: histogram of 1980-present
+* Solid blue: histogram from reference data pre-1980.  See Methodology
+* Blue line - ref distribution fitted with skew-normal
+* Red: histogram of 1980-present
 
 In this rightward shift is indicative of a warming trend since 1980.
 
@@ -155,6 +161,8 @@ Number of days in a year with p-val exceeding set signficance level
 [Back to Top](#Table-of-Contents)
 
 # Extra
+
+Just to feel jealous
 
 <p align="center">
   <img src="img/keywest_thisweek.png" width = 800>
