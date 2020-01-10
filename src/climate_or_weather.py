@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 
 import scipy.stats as stats
@@ -29,7 +30,7 @@ class WeatherRecord():
         self.df_hcn = pd.read_pickle('data/df_hcn_stations.pkl')
         self.station = self.select_nearest_station(latlon)
 
-        #print(self.station.NAME, ' ', self.station.STATE)
+        # print(self.station.NAME, ' ', self.station.STATE)
 
         dly_file = 'data/ghcnd_hcn/'+self.station.ID+'.dly'
         if not os.path.exists(dly_file):
@@ -63,7 +64,9 @@ class WeatherRecord():
         if dt.dayofyear > 3 and dt.dayofyear < 363:
             dt0 = dt + pd.offsets.Day(-3)
             dt1 = dt + pd.offsets.Day(3)
-            return self.df[(self.df.index.dayofyear >= dt0.dayofyear) & (self.df.index.dayofyear <= dt1.dayofyear)][obs_el]
+            return self.df[
+                (self.df.index.dayofyear >= dt0.dayofyear)
+                & (self.df.index.dayofyear <= dt1.dayofyear)][obs_el]
 
         # handle boundary conditions at beginning of year
         elif dt.dayofyear <= 3:
@@ -138,3 +141,17 @@ class WeatherRecord():
 
         ax.set_xlabel('Daily High Temperature °C')
         ax.legend()
+
+
+if __name__ == '__main__':
+
+    matplotlib.rcParams.update({'font.size': 18})
+
+    loc = input('Location: ')
+    date = input('Date (YYYY-MM-DD):')
+    
+    weather_record = WeatherRecord(loc, date)
+    
+    fig = plt.figure(figsize=(12, 8))
+    weather_record.gen_plot(fig)
+    plt.show()

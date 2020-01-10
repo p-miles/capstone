@@ -9,7 +9,7 @@ from climate_or_weather import WeatherRecord
 matplotlib.rcParams.update({'font.size': 18})
 
 loc = 'Denver, CO'
-#loc = 'San Antonio, TX'
+# loc = 'San Antonio, TX'
 wr = WeatherRecord(loc, '2019-01-03')
 
 year_dates = pd.date_range(start='2019-01-01', end='2019-12-31')
@@ -42,7 +42,7 @@ for i, ts in enumerate(test_dates):
     p_vals[i] = sn.sf(ts_temp)
 
 # np.save('pval.npy',p_vals)
-#p_vals = np.load('pval.npy')
+# p_vals = np.load('pval.npy')
 
 # --- GROUP BY YEAR ---
 alpha = .02  # threshold for hypothesis test
