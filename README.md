@@ -32,27 +32,22 @@
 
 ### Click the link at the top of the page to use the web-app.
 
-Fork this repo and download the raw data
+Fork this repo, download the raw data, install additional dependencies and run from conda python-3 environment
 
-```unix
-> cd repo/data
-> ftp ftp.ncdc.noaa.gov/pub/data/ghcn/daily/
-> get ghcnd_hcn.tar.gz
-> (ctrl-d)
+```
+> git clone https://github.com/p-miles/capstone.git
+> cd capstone/data
+> ftp ftp.ncdc.noaa.gov:pub/data/ghcn/daily/ghcnd_hcn.tar.gz
 > tar -xvf ghcnd_hcn.tar.gz
-```
-
-From conda python-3 environment 
-Additional dependencies: 
-```
-> pip install geopandas, pygeo
-> python app.py
+> pip install geopandas pygeo
+> python src/weather_or_climate.py
 ```
 
 Owner Info:
 Access AWS Instance command
+```
 ssh -i "~/.ssh/instancekey.pem" ec2-user@ec2-3-134-110-25.us-east-2.compute.amazonaws.com
-
+```
 
 ## Project Question
 

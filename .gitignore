@@ -3,3 +3,5 @@
 docs
 data/ghcnd_hcn
 data/ghcnd_hcn.tar.gz
+notebooks/.ipynb_checkpoints
+src/__pycach
