@@ -1,10 +1,16 @@
-# Climate or Weather?
+# Climate Change or Just Weather?
 
 <p align="center">
   <img src="img/banner.png" width = 900 height = 60>
 </p>
 
-## Test Hypothesis that High Temperature Observation is just a result of weather variability
+# Web-App
+
+<p align="center">
+    <br>
+    <a href="http://3.134.110.25:8080/"> Climate or Weather? Web-App </a>
+    <br>
+</p>
 
 *Capstone I Project for Galvanize Data Science Immersive, Week 4*
 
@@ -13,26 +19,53 @@
 
 ## Table of Contents
 - [Overview](#overview)
+  - [How to Run](#how-to-run)
   - [Background](#background)
   - [The Data](#the-data)
-  - [Question and Hypothesis](#question-and-hypothesis)
-  - [Methodology](#methodology)
 - [Exploratory Data Analysis](#exploratory-data-analysis)
 - [Results](#results)
-- [Web App](#web-app)
+- [Analysis](#analysis)
 
 
 # Overview
 
+## How to Run
+
+### Click the link at the top of the page to use the web-app.
+
+Fork this repo and download the raw data
+
+```unix
+> cd repo/data
+> ftp ftp.ncdc.noaa.gov/pub/data/ghcn/daily/
+> get ghcnd_hcn.tar.gz
+> (ctrl-d)
+> tar -xvf ghcnd_hcn.tar.gz
+```
+
+From conda python-3 environment 
+Additional dependencies: 
+```
+> pip install geopandas, pygeo
+> python app.py
+```
+
+Owner Info:
+Access AWS Instance command
+ssh -i "~/.ssh/instancekey.pem" ec2-user@ec2-3-134-110-25.us-east-2.compute.amazonaws.com
+
+
 ## Background
 
-Weather is highly variable and people are prone to recency bias.
+Weather is highly variable and people are prone to recency bias.  
+Do you trust your sense when you feel like it's hotter than it used to be?
 
 <p align="center">
   <img src="img/Weather 5 year KDEN.png" width = 800>
 </p>
 
-Is the current weather you are experiencing "normal" or a consequence of climate change?
+Use the web-app to see the historical temperature distributions and rigorously test 
+if the current weather you are experiencing "normal" or a consequence of climate change?
 
 ## The Data
 
@@ -88,20 +121,40 @@ Typically mid-1800's to present
 
 # Results
 
+An example to illustrate the web-app output.
+For New York City on an unseasonably warm day 2016-04-01
+
+Solid blue: histogram from reference data pre-1980.  See Methodology(#methodology)
+Blue line - ref distribution fitted with skew-normal
+Red: histogram of 1980-present
+
+In this rightward shift is indicative of a warming trend since 1980.
+
+p-val of 1% suggests that the null-hypothesis is unlikely
+
 <p align="center">
   <img src="img/NYC_20160401.png" width = 800>
+</p>
+
+A second example during the heat wave in Denver last summer.
+
+<p align="center">
   <img src="img/Denver_20190820.png" width = 800>
 </p>
 
-# Web App
+[Back to Top](#Table-of-Contents)
+
+# Analysis
+
+Number of days in a year with p-val exceeding set signficance level
 
 <p align="center">
-    <br>
-    <a href="http://3.134.110.25:8080/"> Climate or Weather? Web-App </a>
+  <img src="img/daily_ht_denver.png" width = 800>
 </p>
 
-Access AWS Instance command
-ssh -i "~/.ssh/instancekey.pem" ec2-user@ec2-3-134-110-25.us-east-2.compute.amazonaws.com
+[Back to Top](#Table-of-Contents)
+
+# Extra
 
 <p align="center">
   <img src="img/keywest_thisweek.png" width = 800>
