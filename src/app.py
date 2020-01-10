@@ -2,7 +2,7 @@ import flask
 import matplotlib
 from io import BytesIO
 
-import climate_or_weather as cor
+from climate_or_weather import WeatherRecord
 
 matplotlib.rcParams.update({'font.size': 18})
 
@@ -28,23 +28,26 @@ def submission_page():
         </form>
         '''
 
+
 @app.route('/plot.png', methods=['GET', 'POST'])
 def get_graph():
     # retrieve input data from submission page
     loc = str(flask.request.form['location'])
     date = str(flask.request.form['date'])
-    
+
     # must create figure using Figure(), not subplots() or app will crash
-    fig = matplotlib.figure.Figure(figsize=(12,8)) 
-    
-    # create object that encapsulates all the data needed for analysis and plotting methods
-    weather_record = cor.weatherRecord(loc,date)
+    fig = matplotlib.figure.Figure(figsize=(12, 8))
+
+    # create object that encapsulates all the data
+    # needed for analysis and plotting methods
+    weather_record = WeatherRecord(loc, date)
     weather_record.gen_plot(fig)
-    
+
     image = BytesIO()
-    fig.savefig(image)  #the plot is saved
+    fig.savefig(image)  # the plot is saved
 
     return image.getvalue(), 200, {'Content-Type': 'image/png'}
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
