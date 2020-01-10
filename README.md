@@ -4,18 +4,18 @@
   <img src="img/banner.png" width = 900 height = 60>
 </p>
 
-# Web-App
-
 *Capstone I Project for Galvanize Data Science Immersive, Week 4*
 
 *by Paul Miles*
 
+# Web-App
+
 <p style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em;" align="center">
-  <a href="http://3.134.110.25:8080/"> Climate or Weather? Web-App </a>
+  <a href="http://3.134.110.25:8080/"> Climate or Weather? </a>
 </p>
 
 
-## Table of Contents
+# Table of Contents
 - [Overview](#overview)
   - [How to Run](#how-to-run)
   - [Project Question](#project-question)
@@ -71,13 +71,23 @@ and mathematically test if those conditions are "normal" or a consequence of cli
 Data are sourced from the NOAA - Historical Climatology Network
 (https://www.climate.gov/maps-data/dataset/daily-temperature-and-precipitation-reports-data-tables)
 
-Start with the most extensive and valid date to support project outcomes.
+Start with the most extensive and valid data to support project outcomes.
+
+### Data pipeline
+* Each file is all historical observations for a given station
+* Each line is a month of a particular element
+* Must process data into usable format using pandas
+* DataFrame with each row a day and each column is an observation (i.e. TMAX)
+
 
 ## Methodology
 
 Null Hypothesis: even extreme weather is part of normal variability.
+
 Alternative Hypothesis: or seemingly unusually high temperatures are a sign of warming
+
 Significance level: alpha = 2%
+
 Statistical Test: against a fitted skew-normal distribution from pre-1980 observations
 
 To capture trends a reference period of pre-1980 is used to segment the data.
