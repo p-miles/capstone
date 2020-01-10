@@ -14,6 +14,11 @@
   <a href="http://3.134.110.25:8080/"> Climate or Weather? </a>
 </p>
 
+*Notes:* 
+* data available through JAN 08 2020, app will revert to this date if input out of range
+* Weather station part of NOAA-HCN USA network
+* App will select nearest to location querry "City, State" and revert to "Denver, CO" on error
+* International currently not supported
 
 # Table of Contents
 - [Overview](#overview)
