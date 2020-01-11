@@ -165,7 +165,7 @@ A second example during the heat wave in Denver last summer.
 Number of days in a year with p-val exceeding set signficance level
 
 <p align="center">
-  <img src="img/daily_ht_denver.png" width = 800>
+  <img src="img/denver_ht_corrected.png" width = 800>
 </p>
 
 [Back to Top](#Table-of-Contents)
